@@ -9,14 +9,14 @@ function App() {
       name: "beetroot",
       price: 0.45,
       stock: 10,
-      inCart: 2,
+      inCart: 5,
     },
     {
       id: 2,
       name: "carrot",
       price: 0.15,
       stock: 2,
-      inCart: 3,
+      inCart: 7,
     },
     {
       id: 3,
@@ -28,7 +28,7 @@ function App() {
     {
       id: 4,
       name: "apricot",
-      price: 0.25,
+      price: 1.25,
       stock: 1,
       inCart: 5,
     },
@@ -39,9 +39,24 @@ function App() {
     return `assets/icons/${id}-${item.name}.svg`;
   }
 
+  const cart = getCartItems()
+
   function getCartItems() {
     return store.filter((item) => item.inCart > 0);
   }
+
+  function getTotal() {
+    let total = 0
+for (let item of cart) {
+  total += item.inCart * item.price
+}
+return`£${total.toFixed(2)}`
+
+}
+
+const total = getTotal() 
+
+
 
   return (
     <div className="App">
@@ -69,11 +84,12 @@ function App() {
                 <img
                   className="cart--item-icon"
                   src={getItemImagePath(item)}
+                  alt={item.name}
                 />
                 <p>{item.name}</p>
-                <button className="quantity-btn remove-btn center">-</button>
+                <button className="quantity-btn remove-btn center" onChange={() => {setStore(item.inCart)}}>-</button>
                 <span className="quantity-text center">{item.inCart}</span>
-                <button className="quantity-btn add-btn center">+</button>
+                <button className="quantity-btn add-btn center" onChange={() => {setStore(item.inCart)}}>+</button>
               </li>
             ))}
           </ul>
@@ -85,12 +101,12 @@ function App() {
           </div>
 
           <div>
-            <span className="total-number">£0.00</span>
+            <span className="total-number">{total}</span>
           </div>
         </div>
       </main>
     </div>
-  );
+  )
 }
 
 export default App;
