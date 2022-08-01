@@ -39,24 +39,42 @@ function App() {
     return `assets/icons/${id}-${item.name}.svg`;
   }
 
-  const cart = getCartItems()
+  const cart = getCartItems();
 
   function getCartItems() {
     return store.filter((item) => item.inCart > 0);
   }
 
   function getTotal() {
-    let total = 0
-for (let item of cart) {
-  total += item.inCart * item.price
-}
-return`£${total.toFixed(2)}`
+    let total = 0;
+    for (let item of cart) {
+      total += item.inCart * item.price;
+    }
+    return `£${total.toFixed(2)}`;
+  }
 
-}
+  const total = getTotal();
 
-const total = getTotal() 
+  function increaseQuantity(item: StoreItem) {
+    if (item.stock === 0) return;
+    const storeCopy = structuredClone(store);
+    const match = storeCopy.find((target) => target.id === item.id);
 
+    match.inCart++;
+    match.stock--;
 
+    setStore(storeCopy);
+  }
+
+  function decreaseQuantity(item) {
+    if (item.inCart < 1) return;
+    const storeCopy = structuredClone(store);
+    const match = storeCopy.find((target) => target.id === item.id);
+    match.inCart--;
+    match.stock++;
+
+    setStore(storeCopy);
+  }
 
   return (
     <div className="App">
@@ -68,7 +86,13 @@ const total = getTotal()
               <div className=".store--item-icon">
                 <img src={getItemImagePath(item)} />
               </div>
-              <button>Add to cart {item.stock}</button>
+              <button
+                onClick={function () {
+                  increaseQuantity(item);
+                }}
+              >
+                Add to cart {item.stock}
+              </button>
             </li>
           ))}
         </ul>
@@ -87,9 +111,23 @@ const total = getTotal()
                   alt={item.name}
                 />
                 <p>{item.name}</p>
-                <button className="quantity-btn remove-btn center" onChange={() => {setStore(item.inCart)}}>-</button>
+                <button
+                  className="quantity-btn remove-btn center"
+                  onClick={function () {
+                    decreaseQuantity(item);
+                  }}
+                >
+                  -
+                </button>
                 <span className="quantity-text center">{item.inCart}</span>
-                <button className="quantity-btn add-btn center" onChange={() => {setStore(item.inCart)}}>+</button>
+                <button
+                  className="quantity-btn add-btn center"
+                  onClick={function () {
+                    increaseQuantity(item);
+                  }}
+                >
+                  +
+                </button>
               </li>
             ))}
           </ul>
@@ -106,7 +144,7 @@ const total = getTotal()
         </div>
       </main>
     </div>
-  )
+  );
 }
 
 export default App;
